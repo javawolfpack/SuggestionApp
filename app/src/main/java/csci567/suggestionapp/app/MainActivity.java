@@ -81,13 +81,18 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             // Inflate a menu resource providing context menu items
             MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.context_action, menu);
             try {
+                /** Getting the actionprovider associated with the menu item whose id is share */
+                mShareActionProvider = (ShareActionProvider) menu.findItem(R.id.menu_item_share).getActionProvider();
 
+                /** Setting a share intent */
+                mShareActionProvider.setShareIntent(getStringShareIntent(""));
             }
             catch(Exception e){
                 e.printStackTrace();
             }
-            inflater.inflate(R.menu.context_action, menu);
+
             return true;
         }
 
@@ -101,15 +106,13 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         // Called when the user selects a contextual menu item
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.menu_item_share:
-                    // Fetch and store ShareActionProvider
-                    //shareCurrentItem();
-                    mode.finish(); // Action picked, so close the CAB
-                    return true;
-                default:
-                    return false;
+            if(item.getItemId()== R.id.menu_item_share) {
+                // Fetch and store ShareActionProvider
+                //shareCurrentItem();
+                mode.finish(); // Action picked, so close the CAB
+                return true;
             }
+            return false;
         }
 
         // Called when the user exits the action mode
@@ -118,6 +121,15 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             mActionMode = null;
         }
     };
+
+    /** Returns a share intent */
+    private Intent getStringShareIntent(String text){
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_SUBJECT, "SUBJECT");
+        intent.putExtra(Intent.EXTRA_TEXT,text);
+        return intent;
+    }
 
     // Call to update the share intent
     private void setShareIntent(Intent shareIntent) {
@@ -212,16 +224,11 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         };
         searchView.setOnQueryTextListener(queryTextListener);
 
-        MenuItem item =  menu.findItem(R.id.menu_item_share);
-        mShareActionProvider = (ShareActionProvider) item.getActionProvider();
+        /*MenuItem item =  menu.findItem(R.id.menu_item_share);
+        mShareActionProvider = (ShareActionProvider) item.getActionProvider();*/
         return true;
     }
 
-    // Somewhere in the application.
-    public void doShare(Intent shareIntent) {
-        // When you want to share set the share intent.
-        mShareActionProvider.setShareIntent(shareIntent);
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -229,12 +236,12 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if(id==R.id.menu_item_share){
+        /*if(id==R.id.menu_item_share){
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
             shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, "TEXT");
             doShare(shareIntent);
-        }
+        }*/
         if(id==R.id.action_refresh){
             //Refresh Data
             menuItem = item;
@@ -319,7 +326,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                 case 1:
                     return getString(R.string.title_section2).toUpperCase(l);
                 case 2:
-                    return getString(R.string.title_section2).toUpperCase(l);
+                    return getString(R.string.title_section3).toUpperCase(l);
             }
             return null;
         }
@@ -364,7 +371,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
                             // Start the CAB using the ActionMode.Callback defined above
                             mActionMode = getActivity().startActionMode(mActionModeCallback);
-                            Toast.makeText(getBaseContext(), listView2.getItemAtPosition(position).toString(), Toast.LENGTH_LONG).show();
+                            setShareIntent(getStringShareIntent(listView2.getItemAtPosition(position).toString()));
+                            //Toast.makeText(getBaseContext(), listView2.getItemAtPosition(position).toString(), Toast.LENGTH_LONG).show();
                             listView2.setItemChecked(position, true);
                             return true;
 

@@ -14,11 +14,11 @@
         android:orderInCategory="100"
         android:showAsAction="always"
         android:title="@string/action_refresh"/>
-    <item
+    <!--<item
         android:id="@+id/menu_item_share"
         android:showAsAction="always"
         android:title="@string/action_share"
-        android:actionProviderClass="android.widget.ShareActionProvider" />
+        android:actionProviderClass="android.widget.ShareActionProvider" />-->
 
     <item
         android:id="@+id/action_settings"
